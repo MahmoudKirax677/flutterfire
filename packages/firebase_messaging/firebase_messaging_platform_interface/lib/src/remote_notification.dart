@@ -4,26 +4,77 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:firebase_messaging_platform_interface/firebase_messaging_platform_interface.dart';
-
 import 'utils.dart';
 
 /// A class representing a notification which has been construted and sent to the
 /// device via FCM.
 ///
 /// This class can be accessed via a [RemoteMessage.notification].
+
+class DataNotification {
+  // ignore: public_member_api_docs
+  const DataNotification({
+    this.title,
+    this.title_en,
+    this.title_ar,
+    this.image,
+    this.body,
+    this.body_en,
+    this.body_ar,
+  });
+
+  /// Constructs a [DataNotification] from a raw Map.
+  factory DataNotification.fromMap(Map<String, dynamic> map) {
+    return DataNotification(
+      title_en: map['title_en'],
+      title_ar: map['title_ar'],
+      title: map['title'],
+      body: map['body'],
+      body_en: map['body_en'],
+      body_ar: map['body_ar'],
+      image: map['image'],
+    );
+  }
+
+  /// Returns the [DataNotification] as a raw Map.
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'title': title,
+      'title_en': title_en,
+      'title_ar': title_ar,
+      'body': body,
+      'body_en': body_en,
+      'body_ar': body_ar,
+      'image': image,
+    };
+  }
+
+  /// The notification title.
+  final String? title;
+  final String? title_en;
+  final String? title_ar;
+
+  /// The notification body content.
+  final String? body;
+  final String? body_en;
+  final String? body_ar;
+
+  final String? image;
+}
+
 class RemoteNotification {
   // ignore: public_member_api_docs
-  const RemoteNotification({
-    this.android,
-    this.apple,
-    this.web,
-    this.title,
-    this.titleLocArgs = const <String>[],
-    this.titleLocKey,
-    this.body,
-    this.bodyLocArgs = const <String>[],
-    this.bodyLocKey,
-  });
+  const RemoteNotification(
+      {this.android,
+      this.apple,
+      this.web,
+      this.title,
+      this.image,
+      this.titleLocArgs = const <String>[],
+      this.titleLocKey,
+      this.body,
+      this.bodyLocArgs = const <String>[],
+      this.bodyLocKey});
 
   /// Constructs a [RemoteNotification] from a raw Map.
   factory RemoteNotification.fromMap(Map<String, dynamic> map) {
@@ -32,6 +83,7 @@ class RemoteNotification {
       titleLocArgs: _toList(map['titleLocArgs']),
       titleLocKey: map['titleLocKey'],
       body: map['body'],
+      image: map['image'] == null ? '' : map['image'],
       bodyLocArgs: _toList(map['bodyLocArgs']),
       bodyLocKey: map['bodyLocKey'],
       android: map['android'] != null
@@ -54,6 +106,7 @@ class RemoteNotification {
       'titleLocArgs': titleLocArgs,
       'titleLocKey': titleLocKey,
       'body': body,
+      'image': image,
       'bodyLocArgs': bodyLocArgs,
       'bodyLocKey': bodyLocKey,
       'android': android?.toMap(),
@@ -73,6 +126,7 @@ class RemoteNotification {
 
   /// The notification title.
   final String? title;
+  final String? image;
 
   /// Any arguments that should be formatted into the resource specified by titleLocKey.
   final List<String> titleLocArgs;
@@ -95,20 +149,19 @@ class RemoteNotification {
 /// This will only be populated if the current device is Android.
 class AndroidNotification {
   // ignore: public_member_api_docs
-  const AndroidNotification({
-    this.channelId,
-    this.clickAction,
-    this.color,
-    this.count,
-    this.imageUrl,
-    this.link,
-    this.priority = AndroidNotificationPriority.defaultPriority,
-    this.smallIcon,
-    this.sound,
-    this.ticker,
-    this.tag,
-    this.visibility = AndroidNotificationVisibility.private,
-  });
+  const AndroidNotification(
+      {this.channelId,
+      this.clickAction,
+      this.color,
+      this.count,
+      this.imageUrl,
+      this.link,
+      this.priority = AndroidNotificationPriority.defaultPriority,
+      this.smallIcon,
+      this.sound,
+      this.ticker,
+      this.tag,
+      this.visibility = AndroidNotificationVisibility.private});
 
   /// Constructs an [AndroidNotification] from a raw Map.
   factory AndroidNotification.fromMap(Map<String, dynamic> map) {
@@ -195,14 +248,13 @@ class AndroidNotification {
 /// This will only be populated if the current device is Apple based (iOS/MacOS).
 class AppleNotification {
   // ignore: public_member_api_docs
-  const AppleNotification({
-    this.badge,
-    this.sound,
-    this.imageUrl,
-    this.subtitle,
-    this.subtitleLocArgs = const <String>[],
-    this.subtitleLocKey,
-  });
+  const AppleNotification(
+      {this.badge,
+      this.sound,
+      this.imageUrl,
+      this.subtitle,
+      this.subtitleLocArgs = const <String>[],
+      this.subtitleLocKey});
 
   /// Constructs an [AppleNotification] from a raw Map.
   factory AppleNotification.fromMap(Map<String, dynamic> map) {
@@ -255,11 +307,8 @@ class AppleNotification {
 /// Represents the sound property for [AppleNotification]
 class AppleNotificationSound {
   // ignore: public_member_api_docs
-  const AppleNotificationSound({
-    this.critical = false,
-    this.name,
-    this.volume = 0,
-  });
+  const AppleNotificationSound(
+      {this.critical = false, this.name, this.volume = 0});
 
   /// Constructs an [AppleNotificationSound] from a raw Map.
   factory AppleNotificationSound.fromMap(Map<String, dynamic> map) {
